@@ -1,3 +1,5 @@
+using System.Reflection;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -5,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StockExchange.Host.dbcontext;
+using StockExchange.Host.data;
 using StockExchange.Host.indentity;
+using StockExchange.Host.services;
 
 namespace StockExchange.Host
 {
@@ -26,15 +29,21 @@ namespace StockExchange.Host
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
 
-            services.AddDbContext<ApplicationDbContext>(c =>
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                c.UseInMemoryDatabase("test");
+                options.UseInMemoryDatabase("db");
             });
             
             services.AddIdentityCore<ApplicationIdentityUser>(c =>
             {
                 c.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddSingleton<IUserService, UserService>();
+
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

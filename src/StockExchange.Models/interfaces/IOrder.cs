@@ -2,7 +2,7 @@ using System;
 
 namespace StockExchange.Models.interfaces {
 
-    public interface IOffer: ISnowflake {
+    public interface IOrder: ISnowflake {
         public ITransaction OfferedTransaction { get; set; }
         public TimeSpan ValidFor { get; set; }
     }
